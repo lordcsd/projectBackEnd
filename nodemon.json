@@ -1,0 +1,6 @@
+{
+    "env":{
+        "MONGO_ATLAS_PW":"GARRAGE12",
+        "JWT_KEY":"plantium"
+    }
+}
