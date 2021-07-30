@@ -9,7 +9,7 @@ const checkAuth = require("../middleware/check-auth");
 
 router.get("/", (req, res) => {
   User.find()
-    .select("_id name age gender")
+    .select("_id name age gender activeTickets")
     .exec()
     .then((doc) => {
       const response = {
@@ -20,6 +20,7 @@ router.get("/", (req, res) => {
             name: each.name,
             gender: each.gender,
             age: each.age,
+            activeTickets: each.activeTickets,
           };
         }),
       };
@@ -190,6 +191,23 @@ router.post("/delete", checkAuth, (req, res) => {
         error: err,
       });
     });
+});
+
+//post new tickect
+router.post("/addUserTickets", (req, res) => {
+  let _id = req.body._id;
+  let ticket = {
+    title: req.body.title,
+    desc: req.body.desc,
+    price: req.body.price,//number
+    duration: req.body.duration,//number in days
+    imageUrl: req.body.imageUrl,
+    date: req.body.date,//string
+  };
+  User.updateOne({ _id: _id }, { $push: { activeTickets: ticket } })
+    .exec()
+    .then((answer) => res.status(200).json(answer))
+    .catch((err) => res.send(err));
 });
 
 //takes body.password and body.email and header.authorization

@@ -52,7 +52,7 @@ router.get("/", (req, res) => {
     });
 });
 
-router.post("/", checkAuth, upload.single("imageUrl"), (req, res, next) => {
+router.post("/", upload.single("imageUrl"), (req, res, next) => {
   let ticket = new Ticket({
     _id: new mongoose.Types.ObjectId(),
     title: req.body.title,
@@ -102,7 +102,7 @@ router.get("/getOne", (req, res) => {
 });
 
 //delete one ticket
-router.post("/delete", checkAuth, (req, res) => {
+router.post("/delete", (req, res) => {
   let _id = req.body.ticketId;
   let imageUrl = "";
   Ticket.find({ _id: _id })
@@ -139,7 +139,7 @@ router.patch("/", checkAuth, upload.single("imageUrl"), (req, res) => {
   reqProps.forEach((each) => {
     updateOps[each] = req.body[each];
   });
-  
+
   if (req.file) {
     updateOps.imageUrl = req.file ? "/uploads/" + req.file.filename : "";
     let deleteImageUrl = "";

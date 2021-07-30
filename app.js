@@ -10,10 +10,10 @@ const paymentRoutes = require("./api/routes/payments");
 const adminNotificationsRoutes = require("./api/routes/adminNotifications");
 const userNotificationsRoutes = require("./api/routes/userNotifications");
 
-const mongodbURL = `mongodb+srv://lordcsd:${process.env.MONGO_ATLAS_PW}@firstrestfulapi.ms2k2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+const atlas = `mongodb+srv://lordcsd:${process.env.MONGO_ATLAS_PW}@firstrestfulapi.ms2k2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 let mongodbLocalURL = `mongodb://127.0.0.1:27017/`;
 
-mongoose.connect(mongodbLocalURL, {
+mongoose.connect(atlas, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
 });
