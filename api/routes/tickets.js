@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const imageToBase64 = require("image-to-base64");
 const multer = require("multer");
+let rimraf = require("rimraf");
 const fs = require("fs");
 const checkAuth = require("../middleware/check-auth");
 
@@ -52,39 +54,36 @@ router.get("/", (req, res) => {
     });
 });
 
-router.post("/", upload.single("imageUrl"), (req, res, next) => {
-  let ticket = new Ticket({
-    _id: new mongoose.Types.ObjectId(),
-    title: req.body.title,
-    desc: req.body.desc,
-    price: req.body.price,
-    availability: req.body.availability,
-    duration: req.body.duration,
-    date: req.body.date,
-    imageUrl: req.file ? "/uploads/" + req.file.filename : "",
-  });
-  console.log(req.file);
-  ticket
-    .save()
+router.post("/", checkAuth, (req, res, next) => {
+  //check if ticket with title already exist
+  Ticket.find({ title: req.body.title })
+    .exec()
     .then((result) => {
-      console.log(result);
-      res.status(200).json({
-        message: "Ticket posted",
-        createdTicket: {
-          _id: result.id,
-          title: result.title,
-          desc: result.desc,
-          price: result.price,
-          duration: result.duration,
-          availability: result.availability,
-          date: result.date,
-        },
-      });
+      if (result.length > 0) {
+        res.status(409).json({ message: "Ticket with title already exists" });
+      } else {
+        let ticket = new Ticket({
+          _id: new mongoose.Types.ObjectId(),
+          title: req.body.title,
+          desc: req.body.desc,
+          price: req.body.price,
+          availability: req.body.availability,
+          duration: req.body.duration,
+          date: new Date().toISOString(),
+          imageUrl: req.body.imageUrl,
+        });
+        ticket
+          .save()
+          .then((result) => {
+            res.status(200).json({ result });
+          })
+          .catch((err) => {
+            console.log(err);
+            res.status(500).json({ error: err });
+          });
+      }
     })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err });
-    });
+    .catch();
 });
 
 //get one ticket
@@ -102,23 +101,8 @@ router.get("/getOne", (req, res) => {
 });
 
 //delete one ticket
-router.post("/delete", (req, res) => {
+router.post("/delete", checkAuth, (req, res) => {
   let _id = req.body.ticketId;
-  let imageUrl = "";
-  Ticket.find({ _id: _id })
-    .select("imageUrl")
-    .then((doc) => {
-      if (doc.length > 0) {
-        if (doc[0].imageUrl != "") {
-          imageUrl = "api" + doc[0].imageUrl;
-          fs.unlinkSync(imageUrl, (err) => {
-            err ? console.log(err) : null;
-          });
-        }
-      }
-    })
-    .catch((err) => console.log(err));
-
   Ticket.deleteOne({ _id: _id })
     .exec()
     .then((result) => {
@@ -132,41 +116,27 @@ router.post("/delete", (req, res) => {
     });
 });
 
-router.patch("/", checkAuth, upload.single("imageUrl"), (req, res) => {
-  const _id = req.body._id;
-  const updateOps = {};
-  let reqProps = Object.getOwnPropertyNames(req.body);
-  reqProps.forEach((each) => {
-    updateOps[each] = req.body[each];
-  });
+router.patch("/", checkAuth, (req, res) => {
+  let updateOps = {
+    title: req.body.title,
+    desc: req.body.desc,
+    price: req.body.price,
+    availability: req.body.availability,
+    duration: req.body.duration,
+    imageUrl: req.body.imageUrl,
+  };
 
-  if (req.file) {
-    updateOps.imageUrl = req.file ? "/uploads/" + req.file.filename : "";
-    let deleteImageUrl = "";
-    Ticket.find({ _id: _id })
-      .select("imageUrl")
-      .then((doc) => {
-        if (doc.length > 0) {
-          if (doc[0].deleteImageUrl != "") {
-            deleteImageUrl = "api" + doc[0].imageUrl;
-            fs.unlinkSync(deleteImageUrl, (err) => {
-              err ? console.log(err) : null;
-            });
-          }
-        }
-      })
-      .catch((err) => console.log(err));
-  }
+  console.log(Object.getOwnPropertyNames(req.body))
 
-  Ticket.updateOne({ _id: _id }, { $set: updateOps })
+  Ticket.updateOne({ _id: req.body._id }, { $set: updateOps })
     .exec()
     .then((result) => {
-      console.log(result);
-      res.status(200).json(result);
+      res.status(200).json({ message: updateOps });
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({
+        message: "update Failed",
         error: err,
       });
     });

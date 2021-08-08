@@ -6,17 +6,17 @@ let Payment = require("../models/payments");
 
 router.get("/", (req, res) => {
   Payment.find()
-    .select("id userId time amount")
     .exec()
     .then((doc) => {
       const response = {
         count: doc.length,
         Payments: doc.map((each) => {
           return {
-            _id: each._id,
+            id: each._id,
+            title:each.title,
+            date: each.time,
             userId: each.userId,
-            time: each.time,
-            amount: each.amount,
+            price: each.price,
           };
         }),
       };
@@ -59,7 +59,7 @@ router.get("/:userId", (req, res) => {
 
 router.post("/", (req, res) => {
   let payment = new Payment({
-    _id: new mongoose.Types.ObjectId(),
+    title:req.body.title,
     userId: req.body.userId,
     time: req.body.time,
     amount: req.body.amount,
@@ -71,7 +71,7 @@ router.post("/", (req, res) => {
       res.status(200).json({
         message: "payment made",
         createdUser: {
-          _id: result._id,
+          title:result.title,
           userId: result.userId,
           time: result.time,
           amount: result.amount,

@@ -1,17 +1,7 @@
 const mongoose = require("mongoose");
 
-// const userSchema = mongoose.Schema({
-//   name: { type: String, require: true },
-//   email: { type: String, require: true },
-//   password: { type: String, require: true },
-//   phone: { type: String, require: true },
-//   gender: { type: String },
-//   age: { type: String },
-//   activeTickets: { type: Array },
-//   notifications: { type: Array },
-// });
-
 const userSchema = mongoose.Schema({
+  typeOfUser: { type: String, default: "cyberTourUser" },
   name: { type: String, require: true },
   email: { type: String, require: true },
   password: { type: String, require: true },
@@ -21,17 +11,21 @@ const userSchema = mongoose.Schema({
   activeTickets: {
     type: [
       {
-        title: { type: String, require: true },
-        desc: { type: String, require: true },
-        price: { type: Number, require: true },
-        duration: { type: Number },
-        availability: { type: String },
-        date: { type: String },
-        imageUrl: { type: String },
+        title: { type: String },
+        duration:{type: Number},
+        time: { type: String },
+        price: { type: Number },
       },
     ],
   },
-  notifications: { type: Array },
+  notifications: {
+    type: [
+      {
+        title: { type: String, require: true },
+        body: { type: String, require: true },
+      },
+    ],
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

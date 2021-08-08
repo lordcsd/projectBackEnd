@@ -7,15 +7,15 @@ const ticketRoutes = require("./api/routes/tickets");
 const userRoutes = require("./api/routes/users");
 const adminRoutes = require("./api/routes/admins");
 const paymentRoutes = require("./api/routes/payments");
-const adminNotificationsRoutes = require("./api/routes/adminNotifications");
 const userNotificationsRoutes = require("./api/routes/userNotifications");
 
 const atlas = `mongodb+srv://lordcsd:${process.env.MONGO_ATLAS_PW}@firstrestfulapi.ms2k2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 let mongodbLocalURL = `mongodb://127.0.0.1:27017/`;
 
-mongoose.connect(atlas, {
+mongoose.connect(mongodbLocalURL, {
   useUnifiedTopology: true,
   useNewUrlParser: true,
+  useFindAndModify: false,
 });
 
 app.use((req, res, next) => {
@@ -31,14 +31,14 @@ app.use((req, res, next) => {
 });
 
 app.use("/uploads", express.static("api/uploads"));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(express.json());
 
 app.use("/tickets", ticketRoutes);
 app.use("/users", userRoutes);
 app.use("/admins", adminRoutes);
 app.use("/payments", paymentRoutes);
-app.use("/adminNotifications", adminNotificationsRoutes);
 app.use("/userNotifications", userNotificationsRoutes);
 
 app.use((req, res, next) => {

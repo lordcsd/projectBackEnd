@@ -3,9 +3,11 @@ const router = express.Router();
 
 let mongoose = require("mongoose");
 let bcrypt = require("bcryptjs");
-const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const checkAuth = require("../middleware/check-auth");
+
+const User = require("../models/user");
+const Payment = require("../models/payments");
 
 router.get("/", (req, res) => {
   User.find()
@@ -115,10 +117,12 @@ router.post("/login", (req, res) => {
           return res.status(200).json({
             message: "Auth successful",
             email: req.body.email,
+            _id: doc[0]._id,
             token: token,
           });
+        } else {
+          res.status(401).json({ message: "Auth failed" });
         }
-        res.status(401).json({ message: "Auth failed" });
       });
     })
     .catch((err) => {
@@ -194,20 +198,69 @@ router.post("/delete", checkAuth, (req, res) => {
 });
 
 //post new tickect
-router.post("/addUserTickets", (req, res) => {
-  let _id = req.body._id;
-  let ticket = {
-    title: req.body.title,
-    desc: req.body.desc,
-    price: req.body.price,//number
-    duration: req.body.duration,//number in days
-    imageUrl: req.body.imageUrl,
-    date: req.body.date,//string
-  };
-  User.updateOne({ _id: _id }, { $push: { activeTickets: ticket } })
+router.post("/addUserTickets", checkAuth, (req, res) => {
+  let activeTickets = [];
+  let payments = [];
+
+  let existingTicktes = [];
+
+  User.find({ _id: req.body._id })
     .exec()
-    .then((answer) => res.status(200).json(answer))
-    .catch((err) => res.send(err));
+    .then((doc) => {
+      doc[0].activeTickets.forEach((e) => {
+        existingTicktes.push(e.title);
+      });
+
+      console.log("doc: ",doc)
+
+      for (var key in req.body.data) {
+        activeTickets.push({
+          title: req.body.data[key].title,
+          price: req.body.data[key].price,
+          duration: req.body.data[key].duration,
+          time: new Date(),
+        });
+
+        payments.push({
+          title: req.body.data[key].title,
+          duration: req.body.data[key].duration,
+          userId: req.body.data[key].userId,
+          time: new Date().toISOString(),
+          price: req.body.data[key].totalPrice,
+        });
+      }
+
+      let coliding = [];
+      activeTickets.forEach((e) => {
+        if (existingTicktes.includes(e.title)) {
+          coliding.push(e.title);
+        }
+      });
+
+      if (coliding.length > 0) {
+        res.status(200).json({
+          message: `Tickets for ${coliding.toString()} have already been bought by You!`,
+        });
+      } else {
+        User.updateOne(
+          { _id: req.body._id },
+          {
+            $push: {
+              activeTickets: { $each: activeTickets },
+            },
+          }
+        )
+          .exec()
+          .then((answer) => {
+            Payment.insertMany(payments, (error, doc) => {
+              if (error) console.log(error);
+              if (doc) console.log(doc);
+            });
+          })
+          .catch((err) => res.send(err));
+      }
+    })
+    .catch((err) => console.log(err));
 });
 
 //takes body.password and body.email and header.authorization
