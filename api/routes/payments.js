@@ -13,7 +13,7 @@ router.get("/", (req, res) => {
         Payments: doc.map((each) => {
           return {
             id: each._id,
-            title:each.title,
+            title: each.title,
             date: each.time,
             userId: each.userId,
             price: each.price,
@@ -59,7 +59,7 @@ router.get("/:userId", (req, res) => {
 
 router.post("/", (req, res) => {
   let payment = new Payment({
-    title:req.body.title,
+    title: req.body.title,
     userId: req.body.userId,
     time: req.body.time,
     amount: req.body.amount,
@@ -71,11 +71,12 @@ router.post("/", (req, res) => {
       res.status(200).json({
         message: "payment made",
         createdUser: {
-          title:result.title,
+          title: result.title,
           userId: result.userId,
           time: result.time,
           amount: result.amount,
         },
+
       });
     })
     .catch((err) => {

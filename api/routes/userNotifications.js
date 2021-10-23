@@ -3,6 +3,18 @@ let mongoose = require("mongoose");
 
 const router = express.Router();
 const User = require("../models/user");
+const SecretKeySchema = require("../models/secretKeySchema");
+
+// router.post("/addKeys", (req, res) => {
+//   let secretKey = new SecretKeySchema({
+//     taken: false,
+//   });
+
+//   secretKey
+//     .save()
+//     .then((result) => res.send(result))
+//     .catch((err) => res.send(err));
+// });
 
 router.patch("/send", (req, res) => {
   let update = { title: req.body.title, body: req.body.body };
@@ -37,11 +49,8 @@ router.patch("/send", (req, res) => {
 router.patch("/removeOne", (req, res) => {
   let _id = req.body._id;
   let sent = { title: req.body.title, body: req.body.body };
-  console.log(req.body)
-  User.updateOne(
-    { _id: _id },
-    { $pull: { notifications: sent} }
-  )
+  console.log(req.body);
+  User.updateOne({ _id: _id }, { $pull: { notifications: sent } })
     .exec()
     .then((result) => res.status(200).json(result))
     .catch((err) =>
