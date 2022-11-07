@@ -10,7 +10,7 @@ const userNotificationsRoutes = require("./api/routes/userNotifications");
 
 require('dotenv').config()
 
-const atlas = process.env.MONGO_URL
+const atlas = `mongodb+srv://lordcsd:${process.env.MONGO_PWD}@firstrestfulapi.ms2k2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 
 mongoose.connect(atlas, {
   useUnifiedTopology: true,
