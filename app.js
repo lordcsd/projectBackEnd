@@ -47,7 +47,8 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/userNotifications", userNotificationsRoutes);
 
 // app.use(express.static('client'))
-app.use('/static', express.static(join(__dirname, '/client//static')));
+app.use('/static', express.static(join(__dirname, '/client/static')));
+app.use('/homepageImages', express.static(join(__dirname, '/client/homepageImages')));
 app.get('*', function (req, res) {
   res.sendFile('index.html', { root: join(__dirname, '/client/') });
 });

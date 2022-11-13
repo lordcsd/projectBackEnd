@@ -20,6 +20,7 @@ router.post("/signup",
         .matches(/(?=.*[A-Z])/).withMessage('password: must contain at least one uppercase alphabet')
         .matches(/(?=.*[0-9])/).withMessage('password: must contain at least one number')
         .matches(/\W|_/).withMessage('password: must contain at least one special character'),
+
     validateParams,
     signUp);
 

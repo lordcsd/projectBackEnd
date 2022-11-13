@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken")
 
 async function signUp(req, res) {
+    console.log(await User.deleteOne({ email: req.body.email }))
     const { email, name, age, gender, phone, password } = req.body
     const user = await User.findOne({ email })
     if (user) {
