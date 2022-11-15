@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { TouristAuthGuard } = require("../middleware/check-auth");
+const { TouristAuthGuard, GeneralAuthGuard } = require("../middleware/check-auth");
 const { validateParams } = require("../middleware/validateParams");
 const { signUp, login, updateUserDetails, getAllUsers, deleteAccount, adminSignUp } = require("../controllers/user.controller");
 
@@ -55,10 +55,9 @@ router.post("/login",
 router.post("/delete", TouristAuthGuard, deleteAccount);
 
 //takes body.password and body.email and header.authorization
-router.patch("/", TouristAuthGuard,
+router.patch("/", GeneralAuthGuard,
     body('name').isString().withMessage('name: Must be a string').optional(),
     body('age').isNumeric().withMessage('age: Must be a number').optional(),
-    body('gender').isIn(['Male', 'Female']).withMessage('gender: Must be Male or Female').optional(),
     body('phone').isMobilePhone().withMessage('phone: Must be a valid phone number').optional(),
     body('oldPassword')
         .isLength({ min: 8 }).withMessage('oldPassword: must have at least 8 characters')

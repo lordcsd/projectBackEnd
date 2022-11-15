@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const user = require("../models/user");
 const User = require("../models/user")
 
-async function GeneralAuthGuard(req, res) {
+async function GeneralAuthGuard(req, res, next) {
   const token = req.headers.authorization.split(" ")[1]
 
   const decoded = jwt.decode(token, process.env.JWT_KEY);

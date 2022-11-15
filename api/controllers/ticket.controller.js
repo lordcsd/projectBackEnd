@@ -24,4 +24,27 @@ async function PostTicket(req, res) {
     return res.status(200).json({ message: 'ticket created' });
 }
 
-module.exports = { PostTicket }
+async function GetTickets(req, res) {
+    const { _id, title } = req.body.query
+    const tickets = await Ticket.find({
+        ..._id && { _id },
+        ...title && { title },
+    })
+        .select("title desc price _id price duration availability imageUrl")
+    return res.send({ message: "Tickets Fetched", data: { tickets } })
+}
+
+async function DeleteTicket(req, res) {
+    const { _id } = req.body;
+    await Ticket.delete({ _id })
+    return res.send({ message: "Ticket deleted" })
+}
+
+async function UpdateTicket(req, res) {
+    const { title, desc, price, availability, duration, imageUrl } = req.body
+    const updateOps = { title, desc, price, availability, duration, imageUrl }
+    await Ticket.updateOne({ _id: req.body._id }, updateOps)
+    return res.send({ message: 'Ticker Updated', data: updateOps })
+}
+
+module.exports = { PostTicket, GetTickets, DeleteTicket, UpdateTicket }

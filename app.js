@@ -7,6 +7,7 @@ const ticketRoutes = require("./api/routes/tickets");
 const userRoutes = require("./api/routes/users");
 const paymentRoutes = require("./api/routes/payments");
 const userNotificationsRoutes = require("./api/routes/userNotifications");
+const overviewRoutes = require('./api/routes/overview')
 
 require('dotenv').config()
 
@@ -45,9 +46,11 @@ app.use("/api/tickets", ticketRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/userNotifications", userNotificationsRoutes);
+app.use("/api/overview", overviewRoutes);
 
 // app.use(express.static('client'))
 app.use('/static', express.static(join(__dirname, '/client/static')));
+app.use('/assets', express.static(join(__dirname, '/client/assets')));
 app.use('/homepageImages', express.static(join(__dirname, '/client/homepageImages')));
 app.get('*', function (req, res) {
   res.sendFile('index.html', { root: join(__dirname, '/client/') });
