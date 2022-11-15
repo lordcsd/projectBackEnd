@@ -13,7 +13,7 @@ router.get("/",
   validateParams,
   GetTickets)
 
-router.post("/",
+router.post("/create",
   AdminAuthGuard,
   body('title').isString().withMessage('title must be a valid string'),
   body('desc').isString().withMessage('desc must be a valid string'),

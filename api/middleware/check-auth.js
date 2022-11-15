@@ -22,8 +22,6 @@ async function GeneralAuthGuard(req, res, next) {
 
 async function AdminAuthGuard(req, res, next) {
 
-  console.log(req.file)
-
   const token = req.headers.authorization.split(" ")[1]
 
   const decoded = jwt.decode(token, process.env.JWT_KEY);

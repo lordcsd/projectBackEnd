@@ -25,7 +25,7 @@ async function PostTicket(req, res) {
 }
 
 async function GetTickets(req, res) {
-    const { _id, title } = req.body.query
+    const { _id, title } = req.query
     const tickets = await Ticket.find({
         ..._id && { _id },
         ...title && { title },
