@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 async function getPayments(req, res) {
   const payments = await Payment.find()
-    .select("_id  userId paid_at amount reference userCart")
+    .select("_id  userId paid_at amount reference userCart ticketIds")
     .exec();
 
   return res.send({
@@ -16,7 +16,7 @@ async function getUserPayments(req, res) {
   const { userId } = req.params;
 
   const payments = await Payment.find({ userId }).select(
-    "_id  userId paid_at amount reference userCart"
+    "_id  userId paid_at amount reference userCart ticketIds"
   );
 
   return res.send({

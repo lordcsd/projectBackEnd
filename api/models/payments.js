@@ -5,9 +5,7 @@ const paymentSchema = mongoose.Schema({
   paid_at: { type: Date, require: true },
   amount: { type: Number, require: true },
   reference: { type: String, require: true },
-  ticketIds: { type: [
-    { type: String, require: true },
-  ], require: true },
+  ticketIds: [String],
 });
 
 module.exports = mongoose.model("Payments", paymentSchema);
