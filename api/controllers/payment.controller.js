@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 async function getPayments(req, res) {
   const payments = await Payment.find()
-    .select("_id title time userId price")
+    .select("_id  userId paid_at amount reference userCart")
     .exec();
 
   return res.send({
@@ -16,9 +16,8 @@ async function getUserPayments(req, res) {
   const { userId } = req.params;
 
   const payments = await Payment.find({ userId }).select(
-    "_id userId time amount"
+    "_id  userId paid_at amount reference userCart"
   );
-
   return res.send({
     count: payments.lenght,
     payments,
@@ -55,10 +54,8 @@ async function paystackWebhook(req, res) {
       paid_at: new Date(paid_at),
       amount,
       reference,
-      userCart,
+      userCart: userCart.map((ticket) => ticket._id),
     }).save();
-
-    console.log({ paid });
 
     return res.status(200).json({ message: "Transaction verified" });
   }
