@@ -47,14 +47,14 @@ async function paystackWebhook(req, res) {
 
   if (event == "charge.success") {
     const { amount, paid_at, reference, metadata } = data;
-    const { userId, userCart } = metadata;
+    const { userId, ticketIds } = metadata;
 
     const paid = await new Payment({
       userId,
       paid_at: new Date(paid_at),
       amount,
       reference,
-      userCart: userCart.map((ticket) => ticket._id),
+      ticketIds,
     }).save();
 
     return res.status(200).json({ message: "Transaction verified" });

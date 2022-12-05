@@ -5,7 +5,7 @@ const paymentSchema = mongoose.Schema({
   paid_at: { type: Date, require: true },
   amount: { type: Number, require: true },
   reference: { type: String, require: true },
-  userCart: { type: Array, require: true },
+  ticketIds: { type: Array, require: true },
 });
 
 module.exports = mongoose.model("Payments", paymentSchema);
