@@ -11,8 +11,6 @@ router.get("/", getPayments);
 
 router.get("/:userId", getUserPayments);
 
-router.post("/checkout");
-
 router.post("/paystack-webhook", paystackWebhook);
 
 module.exports = router;
