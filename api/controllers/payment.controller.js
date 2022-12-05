@@ -18,6 +18,7 @@ async function getUserPayments(req, res) {
   const payments = await Payment.find({ userId }).select(
     "_id  userId paid_at amount reference userCart"
   );
+
   return res.send({
     count: payments.lenght,
     payments,
@@ -48,8 +49,6 @@ async function paystackWebhook(req, res) {
   if (event == "charge.success") {
     const { amount, paid_at, reference, metadata } = data;
     const { userId, ticketIds } = metadata;
-
-    console.log({ metadata });
 
     const paid = await new Payment({
       userId,

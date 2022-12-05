@@ -31,8 +31,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
 app.use("/uploads", express.static("api/uploads"));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
