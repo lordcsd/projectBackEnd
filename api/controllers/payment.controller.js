@@ -49,6 +49,8 @@ async function paystackWebhook(req, res) {
     const { amount, paid_at, reference, metadata } = data;
     const { userId, ticketIds } = metadata;
 
+    console.log({ metadata });
+
     const paid = await new Payment({
       userId,
       paid_at: new Date(paid_at),
