@@ -1,4 +1,5 @@
 const Payment = require("../models/payments");
+const Ticket = require("../models/ticket");
 const crypto = require("crypto");
 
 async function getPayments(req, res) {
@@ -18,6 +19,13 @@ async function getUserPayments(req, res) {
   const payments = await Payment.find({ userId }).select(
     "_id  userId paid_at amount reference userCart ticketIds"
   );
+
+  for (const i in payments) {
+    const tickets = await Ticket.find({
+      _id: { $in: payments[i].ticketIds },
+    });
+    payments[i]['_doc'] = { ...payments[i]['_doc'], tickets };
+  }
 
   return res.send({
     count: payments.lenght,
@@ -63,54 +71,6 @@ async function paystackWebhook(req, res) {
 
   return res.status(422).json({ error: "Invalid transaction" });
 }
-
-// {
-//   amount: 103500,
-//   paid_at: '2022-12-05T14:34:55.000Z',
-//   reference: 'T491246059456135',
-//   metadata: {
-//     name: 'Chinonso Dimgba',
-//     userId: '638dd9b43cb9152d3881e0b0',
-//     userCart: [{_id: "",title: "title",  }]
-//     referrer: 'https://tourist-app.cyclic.app/dashboard'
-//   },
-//   customer: {
-//     id: 104705060,
-//     first_name: '',
-//     last_name: '',
-//     email: 'dimgbachinonso@gmail.com',
-//     customer_code: 'CUS_j8wju09bhb1ezp2',
-//     phone: '',
-//     metadata: null,
-//     risk_action: 'default',
-//     international_format_phone: null
-//   }
-// }
-
-// (req, res) => {
-//     let payment = new Payment({
-//       title: req.body.title,
-//       userId: req.body.userId,
-//       time: req.body.time,
-//       amount: req.body.amount,
-//     });
-//     payment
-//       .save()
-//       .then((result) => {
-//         res.status(200).json({
-//           message: "payment made",
-//           createdUser: {
-//             title: result.title,
-//             userId: result.userId,
-//             time: result.time,
-//             amount: result.amount,
-//           },
-//         });
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   }
 
 module.exports = {
   getPayments,
