@@ -44,10 +44,16 @@ async function paystackWebhook(req, res) {
     return res.status(406).json({ error: "Invalid Hash" });
   }
 
-  console.log({ message: "Valid body", body });
-}
+  const { event, data } = body;
 
-async function checkout(req, res) {}
+  if (event == "charge.success") {
+    const { amount, paid_at, reference, metadata, customer } = data;
+    console.log({ amount, paid_at, reference, metadata, customer });
+    return res.status(200).json({ message: "Transaction verified" });
+  }
+
+  return res.status(422).json({ error: "Invalid transaction" });
+}
 
 // (req, res) => {
 //     let payment = new Payment({
@@ -77,6 +83,5 @@ async function checkout(req, res) {}
 module.exports = {
   getPayments,
   getUserPayments,
-  checkout,
   paystackWebhook,
 };
