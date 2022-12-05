@@ -47,13 +47,47 @@ async function paystackWebhook(req, res) {
   const { event, data } = body;
 
   if (event == "charge.success") {
-    const { amount, paid_at, reference, metadata, customer } = data;
-    console.log({ amount, paid_at, reference, metadata, customer });
+    const { amount, paid_at, reference, metadata } = data;
+    const { userId, userCart } = metadata;
+
+    const paid = await new Payment({
+      userId,
+      paid_at: new Date(paid_at),
+      amount,
+      reference,
+      userCart,
+    }).save();
+
+    console.log({ paid });
+
     return res.status(200).json({ message: "Transaction verified" });
   }
 
   return res.status(422).json({ error: "Invalid transaction" });
 }
+
+// {
+//   amount: 103500,
+//   paid_at: '2022-12-05T14:34:55.000Z',
+//   reference: 'T491246059456135',
+//   metadata: {
+//     name: 'Chinonso Dimgba',
+//     userId: '638dd9b43cb9152d3881e0b0',
+//     userCart: [{_id: "",title: "title",  }]
+//     referrer: 'https://tourist-app.cyclic.app/dashboard'
+//   },
+//   customer: {
+//     id: 104705060,
+//     first_name: '',
+//     last_name: '',
+//     email: 'dimgbachinonso@gmail.com',
+//     customer_code: 'CUS_j8wju09bhb1ezp2',
+//     phone: '',
+//     metadata: null,
+//     risk_action: 'default',
+//     international_format_phone: null
+//   }
+// }
 
 // (req, res) => {
 //     let payment = new Payment({
