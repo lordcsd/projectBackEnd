@@ -11,7 +11,7 @@ const overviewRoutes = require('./api/routes/overview')
 
 require('dotenv').config()
 
-const atlas = `mongodb+srv://lordcsd:${process.env.MONGO_PWD}@firstrestfulapi.ms2k2.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+const atlas = process.env.MONGODB_URL
 
 mongoose.connect(atlas, {
   useUnifiedTopology: true,
@@ -37,10 +37,6 @@ app.use("/uploads", express.static("api/uploads"));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(express.json());
-
-// app.get("/", (req, res) => {
-//   res.sendFile(join(__dirname, "client", "index.html"));
-// });
 
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/users", userRoutes);
